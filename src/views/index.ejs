@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <div class="site-title">MCP Test</div>
+        <nav aria-label="Menu principal">
+          <ul class="menu">
+            <li><a class="active" href="/">Início</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <section class="card" aria-labelledby="titulo-principal">
+          <h1 id="titulo-principal"><%= title %></h1>
+          <p><%= message %></p>
+          <a class="btn" href="/">Início</a>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">POC Pottencial</div>
+    </footer>
+  </body>
+</html>
