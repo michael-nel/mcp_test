@@ -25,7 +25,7 @@
     ],
     "ext": "ts,ejs",
     "execMap": {
-      "ts": "sh -c 'tsc && node dist/server.js'"
+      "ts": "tsc && node dist/server.js"
     }
   }
 }
