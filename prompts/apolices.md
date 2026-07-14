@@ -43,13 +43,28 @@ Ao consultar listagem de apólices:
 ## Regras obrigatórias de parâmetros (IMPORTANTE)
 ### Listagem
 - **Não enviar** o parâmetro `includes`.
-- Enviar apenas os parâmetros mínimos necessários da listagem (ex.: período/paginação), conforme documentação.
+- Enviar apenas os parâmetros mínimos necessários da listagem, conforme documentação.
+- Implementar paginação com:
+  - **tamanho da página fixo em 10** (`pageSize = 10`)
+  - controle de página atual (`page`)
+  - navegação Anterior/Próxima (e/ou números de página, se suportado)
 
 ### Detalhe
 - A chamada de detalhe deve enviar **apenas o identificador da apólice** (`id`).
 - **Não enviar `includes` na rota de detalhe.**
 - **Não enviar `includesAll` na rota de detalhe.**
-- **Não enviar parâmetros extras** além do `id`, exceto se a documentação exigir explicitamente algum header/query obrigatório.
+- **Não enviar parâmetros extras** além do `id`, exceto se a documentação exigir explicitamente.
+
+## UX obrigatória: Loading
+Durante chamadas à API, exibir indicador de carregamento para melhorar a experiência:
+1. Na tela de listagem:
+   - mostrar texto/overlay **"Carregando..."** enquanto busca dados
+   - ocultar ao finalizar (sucesso ou erro)
+2. Na tela de detalhes:
+   - mostrar **"Carregando..."** enquanto busca dados da apólice
+   - ocultar ao finalizar (sucesso ou erro)
+3. Desabilitar temporariamente botões de paginação/ações durante loading para evitar múltiplos cliques.
+4. Manter estilo visual coerente com o padrão atual do projeto.
 
 ## Tratamento de erros (obrigatório)
 Em qualquer erro retornado pela API de Policy Management:
@@ -64,12 +79,12 @@ Em qualquer erro retornado pela API de Policy Management:
 ## Implementação esperada (MVC)
 ### Models / Types
 - `src/models/policy.model.ts`
-  - tipos de listagem e detalhe
+  - tipos de listagem, detalhe e paginação
   - tipo de erro da API
 
 ### Service
 - `src/services/policy.service.ts`
-  - `listPolicies(...)` (sem `includes`)
+  - `listPolicies({ page, pageSize: 10, dataInicial, dataFinal })` (sem `includes`)
   - `getPolicyDetails(policyId)` (**somente id**)
   - usar `getAuthContext()` para token + ambiente global
   - montar baseURL conforme ambiente
@@ -79,35 +94,44 @@ Em qualquer erro retornado pela API de Policy Management:
 
 ### Controller
 - `src/controllers/policy.controller.ts`
-  - `renderPoliciesList`
+  - `renderPoliciesList` com suporte a `page`
   - `renderPolicyDetails`
   - validar autenticação global
   - repassar erro para toast
 
 ### Routes
 - `src/routes/policy.routes.ts`
-  - `GET /apolices`
+  - `GET /apolices?page=1`
   - `GET /apolices/:id`
 - detalhe deve encaminhar apenas `req.params.id` para o service
 
 ### Views
 - `src/views/policies/index.ejs`
+  - tabela de apólices
+  - paginação (page size 10)
+  - indicador de loading "Carregando..."
 - `src/views/policies/details.ejs`
+  - dados completos da apólice
+  - indicador de loading "Carregando..."
 - menu com Apólices ativo apenas para logado
 - toast de erro visível
 
 ## Critérios de aceite
 1. Menu Apólices só ativo quando logado.
-2. Listagem funciona com período de 30 dias e sem hora.
+2. Listagem funciona com período de 30 dias e datas sem hora no envio.
 3. **Listagem não envia `includes`.**
 4. **Detalhe envia somente `id` da apólice.**
 5. **Detalhe não envia `includes` nem `includesAll`.**
-6. Dados em português BR, datas em pt-BR.
-7. Em erro, toast mostra status + mensagem da API.
-8. `npm run build` e `npm run dev` sem erros.
+6. Paginação ativa com **10 itens por página**.
+7. Loading **"Carregando..."** visível durante requisições de listagem e detalhe.
+8. Em erro, toast mostra status + mensagem da API.
+9. Dados em português BR e datas em pt-BR.
+10. `npm run build` e `npm run dev` sem erros.
 
 ## Entrega
 - Lista de arquivos alterados.
-- Conteúdo dos principais arquivos (routes, controller, service, views).
+- Conteúdo dos principais arquivos (routes, controller, service, views, JS/CSS se aplicável).
 - Trecho explícito da chamada HTTP de detalhe provando que só envia `id`.
-- Passo a passo de teste manual de listagem e detalhe.
+- Trecho da implementação da paginação (pageSize=10).
+- Trecho da implementação de loading ("Carregando...").
+- Passo a passo de teste manual.
